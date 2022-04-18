@@ -1,0 +1,33 @@
+{
+    "name": "VirusTotal",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "storage",
+        "downloads",
+        "scripting",
+        "notifications",
+        "contextMenus"
+    ],
+    "host_permissions": ["*://*/*"],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "/vt-16px.png",
+            "32": "/vt-32px.png",
+            "48": "/vt-48px.png",
+            "128": "/vt-128px.png"
+        }
+    },
+    "icons": {
+        "16": "/vt-16px.png",
+        "32": "/vt-32px.png",
+        "48": "/vt-48px.png",
+        "128": "/vt-128px.png"
+    }
+}
