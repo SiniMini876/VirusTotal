@@ -1,0 +1,63 @@
+h1 {
+    color: blue;
+}
+
+.vticon {
+    float: right;
+}
+
+.vticon:hover {
+    width: 58px;
+    transition: linear 0.5s;
+}
+
+p {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.line {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top: 3px solid #bbb;
+}
+
+button {
+    display: inline-block;
+    text-align: center;
+    background: var(--color);
+    color: var(--bg);
+    font-weight: bold;
+    padding: 0.2em 0.4em 0.2em;
+    line-height: 1;
+    border-radius: 1em;
+    position: relative;
+    min-width: 8.23em;
+    text-decoration: none;
+    font-family: var(--font);
+    font-size: 1rem;
+}
+
+button:hover {
+    transition: linear 0.2s;
+    color: white;
+    cursor: pointer;
+    background: blue;
+}
+
+.copyright {
+    font-size: 10px;
+    color: #ccc;
+    text-decoration: none;
+    text-align: center;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+    background-color: blue;
+    border-radius: 0.5rem /* 6px */;
+    padding-left: 0.5rem /* 8px */;
+    padding-right: 0.5rem /* 8px */;
+    padding-top: 0.25rem /* 4px */;
+    padding-bottom: 0.25rem; /* 4px ;*/
+}

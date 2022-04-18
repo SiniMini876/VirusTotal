@@ -1,16 +1,39 @@
 const apikey =
     '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e';
-
-chrome.contextMenus.create({
-    title: 'Scan URL',
-    contexts: ['link'],
-    id: 'vtscanurl',
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+        title: 'Scan URL',
+        contexts: ['link'],
+        id: 'vtscanurl',
+    });
 });
 
 chrome.downloads.onCreated.addListener(async (downloadedItem) => {
+    const settings = await chrome.storage.sync.get('settings');
+    if (settings && !settings.downloads) return;
     await chrome.downloads.pause(downloadedItem.id);
-
-    const result = await postFile(downloadedItem);
+    let result: VTPostResponse = {
+        data: {
+            id: '',
+            type: '',
+        },
+        type: 'file',
+    };
+    console.log(downloadedItem.fileSize);
+    if (downloadedItem.fileSize > 3.2e7)
+        result = await postFile32MB(downloadedItem);
+    if (downloadedItem.fileSize < 2e8)
+        result = await postFile200MB(downloadedItem);
+    if (downloadedItem.fileSize > 2e8) {
+        chrome.notifications.create({
+            title: 'Virus Total',
+            message:
+                "The file is over 200MB, I couldn't scan the file, proceed at your own risk.",
+            iconUrl: 'vt-200px.jpeg',
+            type: 'basic',
+        });
+        return;
+    }
 
     console.log(result);
 
@@ -31,8 +54,16 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         id: result.data.id,
         stats: analysesResult.data.attributes.stats,
     };
-    console.log(resultInStorage);
-    chrome.storage.local.set({ [downloadedItem.id]: resultInStorage });
+
+    const { VTtests } = await chrome.storage.sync.get(['VTtests']);
+
+    console.log(VTtests);
+
+    VTtests.push(resultInStorage);
+
+    await chrome.storage.sync.set({
+        VTtests,
+    });
 
     if (analysesResult.data.attributes.stats.malicious > 0) {
         chrome.notifications.create({
@@ -55,46 +86,60 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
     const result = await postURL(info.linkUrl!);
-    const analysesResult = await getURLAnalysis(result);
+    let analysesResult = {} as VTGetURLAnalysis;
 
-    const resultInStorage = {
-        date: analysesResult.data.attributes.last_analysis_date,
-        id: result.data.id,
-        stats: analysesResult.data.attributes.last_analysis_stats,
-    };
+    setTimeout(async () => {
+        analysesResult = await getURLAnalysis(result);
 
-    console.log(resultInStorage);
-    chrome.storage.local.set({ [result.data.id]: resultInStorage });
+        const arrayOfId = result.data.id.split('-');
+        const modifiedId = arrayOfId[1];
 
-    if (analysesResult.data.attributes.last_analysis_stats.malicious > 0) {
-        chrome.notifications.create({
-            title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.malicious} anti viruses identified this website as malicious! It's be recommended to leave the page`,
-            iconUrl: 'vt-200px.jpeg',
-            type: 'basic',
+        const resultInStorage = {
+            date: analysesResult.data.attributes.last_analysis_date,
+            id: modifiedId,
+            stats: analysesResult.data.attributes.last_analysis_stats,
+        };
+
+        const { VTtests } = await chrome.storage.sync.get(['VTtests']);
+
+        console.log(VTtests);
+
+        VTtests.push(resultInStorage);
+
+        await chrome.storage.sync.set({
+            VTtests,
         });
-        return;
-    }
-    if (analysesResult.data.attributes.last_analysis_stats.suspicious > 0) {
-        chrome.notifications.create({
-            title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.suspicious} anti viruses identified this website as suspicious! It's be recommended to leave the page`,
-            iconUrl: 'vt-200px.jpeg',
-            type: 'basic',
-        });
-    }
 
-    if (analysesResult.data.attributes.total_votes.malicious > 0) {
-        chrome.notifications.create({
-            title: 'Virus Total',
-            message: `${analysesResult.data.attributes.total_votes.malicious} people voted website as suspicious. Anything is at your own risk.`,
-            iconUrl: 'vt-200px.jpeg',
-            type: 'basic',
-        });
-    }
+        if (analysesResult.data.attributes.last_analysis_stats.malicious > 0) {
+            chrome.notifications.create({
+                title: 'Virus Total',
+                message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.malicious} anti viruses identified this website as malicious! It's be recommended to leave the page`,
+                iconUrl: 'vt-200px.jpeg',
+                type: 'basic',
+            });
+            return;
+        }
+        if (analysesResult.data.attributes.last_analysis_stats.suspicious > 0) {
+            chrome.notifications.create({
+                title: 'Virus Total',
+                message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.suspicious} anti viruses identified this website as suspicious! It's be recommended to leave the page`,
+                iconUrl: 'vt-200px.jpeg',
+                type: 'basic',
+            });
+        }
+
+        if (analysesResult.data.attributes.total_votes.malicious > 0) {
+            chrome.notifications.create({
+                title: 'Virus Total',
+                message: `${analysesResult.data.attributes.total_votes.malicious} people voted website as suspicious. Anything is at your own risk.`,
+                iconUrl: 'vt-200px.jpeg',
+                type: 'basic',
+            });
+        }
+    }, 3500);
 });
 
-async function postFile(downloadedItem: chrome.downloads.DownloadItem) {
+async function postFile32MB(downloadedItem: chrome.downloads.DownloadItem) {
     const filerespose = await fetch(downloadedItem.finalUrl);
     const blob = await filerespose.blob();
     const base64Blob = (await blobToBase64(blob)) as string;
@@ -102,8 +147,7 @@ async function postFile(downloadedItem: chrome.downloads.DownloadItem) {
     const options = {
         method: 'POST',
         headers: {
-            'x-apikey':
-                '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e',
+            'x-apikey': apikey,
             'Content-Type':
                 'multipart/form-data; boundary=---011000010111000001101001',
         },
@@ -125,6 +169,59 @@ async function postFile(downloadedItem: chrome.downloads.DownloadItem) {
               },
               type: 'file',
           } as VTPostResponse);
+}
+
+async function postFile200MB(downloadedItem: chrome.downloads.DownloadItem) {
+    const filerespose = await fetch(downloadedItem.finalUrl);
+    const blob = await filerespose.blob();
+    const base64Blob = (await blobToBase64(blob)) as string;
+
+    const options_uploadurl = {
+        method: 'GET',
+        headers: { Accept: 'application/json', 'x-apikey': apikey },
+    };
+
+    const uploadURL_data = await fetch(
+        'https://www.virustotal.com/api/v3/files/upload_url',
+        options_uploadurl,
+    );
+    const upload_URL = await uploadURL_data.json();
+
+    if (upload_URL.data) {
+        const options = {
+            method: 'POST',
+            headers: {
+                'x-apikey': apikey,
+                'Content-Type':
+                    'multipart/form-data; boundary=---011000010111000001101001',
+            },
+            body: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="file"; filename="file"\r\n\r\n${base64Blob}\r\n-----011000010111000001101001--\r\n\r\n`,
+        };
+
+        const response = await fetch(
+            'https://www.virustotal.com/api/v3/files',
+            options,
+        );
+        const data = (await response.json()) as VTPostResponse;
+        data.type = 'file';
+        return data
+            ? data
+            : ({
+                  data: {
+                      id: '',
+                      type: '',
+                  },
+                  type: 'file',
+              } as VTPostResponse);
+    }
+
+    return {
+        data: {
+            id: '',
+            type: '',
+        },
+        type: 'file',
+    } as VTPostResponse;
 }
 
 function blobToBase64(blob: Blob) {
@@ -182,7 +279,7 @@ async function postURL(url: string) {
                 '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e',
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({ url: url }),
+        body: new URLSearchParams({ url }),
     };
 
     const response = await fetch(

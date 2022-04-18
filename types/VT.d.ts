@@ -6,6 +6,21 @@ interface VTPostResponse {
     type: 'url' | 'file';
 }
 
+interface VTtest {
+    date: number;
+    id: string;
+    stats: {
+        'confirmed-timeout'?: number;
+        failure?: number;
+        harmless: number;
+        malicious: number;
+        suspicious: number;
+        timeout: number;
+        'type-unsupported'?: number;
+        undetected: number;
+    };
+}
+
 interface VTGetAnalysis {
     data: {
         attributes: {
