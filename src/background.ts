@@ -1,3 +1,5 @@
+import { VTPostResponse, VTGetAnalysis } from '../types/VT';
+
 const apikey =
     '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e';
 chrome.runtime.onInstalled.addListener(() => {
@@ -10,7 +12,9 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.downloads.onCreated.addListener(async (downloadedItem) => {
     const settings = await chrome.storage.sync.get('settings');
-    if (settings && !settings.downloads) return;
+    if (settings && !settings.downloads) {
+        console.log('you suck');
+    }
     await chrome.downloads.pause(downloadedItem.id);
     let result: VTPostResponse = {
         data: {
@@ -47,7 +51,7 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         return;
     }
 
-    const analysesResult = await getFileAnalysis(result);
+    const analysesResult = await waitForAnalysisCompletion(result.data.id);
 
     const resultInStorage = {
         date: analysesResult.data.attributes.date,
@@ -86,23 +90,23 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
     const result = await postURL(info.linkUrl!);
-    let analysesResult = {} as VTGetURLAnalysis;
-
+    let analysesResult = {} as VTGetAnalysis;
     setTimeout(async () => {
-        analysesResult = await getURLAnalysis(result);
+        analysesResult = await waitForAnalysisCompletion(result.data.id);
 
         const arrayOfId = result.data.id.split('-');
         const modifiedId = arrayOfId[1];
 
         const resultInStorage = {
-            date: analysesResult.data.attributes.last_analysis_date,
+            url: info.linkUrl,
+            date: analysesResult.data.attributes.date,
             id: modifiedId,
-            stats: analysesResult.data.attributes.last_analysis_stats,
+            stats: analysesResult.data.attributes.stats,
         };
 
-        const { VTtests } = await chrome.storage.sync.get(['VTtests']);
+        let { VTtests } = await chrome.storage.sync.get(['VTtests']);
 
-        console.log(VTtests);
+        if (!VTtests) VTtests = [];
 
         VTtests.push(resultInStorage);
 
@@ -110,33 +114,24 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
             VTtests,
         });
 
-        if (analysesResult.data.attributes.last_analysis_stats.malicious > 0) {
+        if (analysesResult.data.attributes.stats.malicious > 0) {
             chrome.notifications.create({
                 title: 'Virus Total',
-                message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.malicious} anti viruses identified this website as malicious! It's be recommended to leave the page`,
+                message: `WARNING!!! ${analysesResult.data.attributes.stats.malicious} anti viruses identified this website as malicious! It's be recommended to leave the page`,
                 iconUrl: 'vt-200px.jpeg',
                 type: 'basic',
             });
             return;
         }
-        if (analysesResult.data.attributes.last_analysis_stats.suspicious > 0) {
+        if (analysesResult.data.attributes.stats.suspicious > 0) {
             chrome.notifications.create({
                 title: 'Virus Total',
-                message: `WARNING!!! ${analysesResult.data.attributes.last_analysis_stats.suspicious} anti viruses identified this website as suspicious! It's be recommended to leave the page`,
+                message: `WARNING!!! ${analysesResult.data.attributes.stats.suspicious} anti viruses identified this website as suspicious! It's be recommended to leave the page`,
                 iconUrl: 'vt-200px.jpeg',
                 type: 'basic',
             });
         }
-
-        if (analysesResult.data.attributes.total_votes.malicious > 0) {
-            chrome.notifications.create({
-                title: 'Virus Total',
-                message: `${analysesResult.data.attributes.total_votes.malicious} people voted website as suspicious. Anything is at your own risk.`,
-                iconUrl: 'vt-200px.jpeg',
-                type: 'basic',
-            });
-        }
-    }, 3500);
+    }, 5000);
 });
 
 async function postFile32MB(downloadedItem: chrome.downloads.DownloadItem) {
@@ -224,52 +219,6 @@ async function postFile200MB(downloadedItem: chrome.downloads.DownloadItem) {
     } as VTPostResponse;
 }
 
-function blobToBase64(blob: Blob) {
-    return new Promise((resolve, _) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-    });
-}
-
-async function getFileAnalysis(vt_response: VTPostResponse) {
-    const options = {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'x-apikey': apikey,
-        },
-    };
-
-    const modifiedId = vt_response.data.id.replace(/-/g, '%3D');
-    const response = await fetch(
-        `https://www.virustotal.com/api/v3/analyses/${modifiedId}`,
-        options,
-    );
-    const data = (await response.json()) as VTGetAnalysis;
-    console.log(data);
-    return data ? data : ({} as VTGetAnalysis);
-}
-
-async function getURLAnalysis(vt_response: VTPostResponse) {
-    const options = {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'x-apikey': apikey,
-        },
-    };
-    const arrayOfId = vt_response.data.id.split('-');
-    const modifiedId = arrayOfId[1];
-    const response = await fetch(
-        `https://www.virustotal.com/api/v3/urls/${modifiedId}`,
-        options,
-    );
-    const data = (await response.json()) as VTGetURLAnalysis;
-    console.log(data);
-    return data ? data : ({} as VTGetURLAnalysis);
-}
-
 async function postURL(url: string) {
     const options = {
         method: 'POST',
@@ -298,4 +247,49 @@ async function postURL(url: string) {
               },
               type: 'url',
           } as VTPostResponse);
+}
+
+async function getAnalysis(id: string) {
+    const options = {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'x-apikey': apikey,
+        },
+    };
+
+    const modifiedId = encodeURIComponent(id);
+    const response = await fetch(
+        `https://www.virustotal.com/api/v3/analyses/${modifiedId}`,
+        options,
+    );
+    const data = (await response.json()) as VTGetAnalysis;
+    return data ? data : ({} as VTGetAnalysis);
+}
+
+async function waitForAnalysisCompletion(id: string) {
+    while (true) {
+        const analysis = await getAnalysis(id);
+        if (analysis.data.attributes.status === 'completed') {
+            console.log(analysis);
+            return analysis;
+        }
+        await sleep(20);
+    }
+}
+
+function sleep(seconds: number) {
+    return new Promise<void>((resolve) =>
+        setTimeout(() => {
+            resolve();
+        }, seconds * 1000),
+    );
+}
+
+function blobToBase64(blob: Blob) {
+    return new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
 }
