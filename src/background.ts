@@ -8,13 +8,12 @@ chrome.runtime.onInstalled.addListener(() => {
         contexts: ['link'],
         id: 'vtscanurl',
     });
+    chrome.storage.sync.set({ settings: { downloads: true } });
 });
 
 chrome.downloads.onCreated.addListener(async (downloadedItem) => {
-    const settings = await chrome.storage.sync.get('settings');
-    if (settings && !settings.downloads) {
-        console.log('you suck');
-    }
+    const { settings } = await chrome.storage.sync.get(['settings']);
+    if (settings && !settings.downloads) return;
     await chrome.downloads.pause(downloadedItem.id);
     let result: VTPostResponse = {
         data: {
@@ -23,7 +22,6 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         },
         type: 'file',
     };
-    console.log(downloadedItem.fileSize);
     if (downloadedItem.fileSize > 3.2e7)
         result = await postFile32MB(downloadedItem);
     if (downloadedItem.fileSize < 2e8)
@@ -38,8 +36,6 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         });
         return;
     }
-
-    console.log(result);
 
     if (!result.data.id) {
         chrome.notifications.create({
@@ -57,13 +53,14 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         date: analysesResult.data.attributes.date,
         id: result.data.id,
         stats: analysesResult.data.attributes.stats,
+        meta: analysesResult.meta,
+        links: analysesResult.data.links,
     };
 
     const { VTtests } = await chrome.storage.sync.get(['VTtests']);
 
-    console.log(VTtests);
-
     VTtests.push(resultInStorage);
+    console.log(VTtests);
 
     await chrome.storage.sync.set({
         VTtests,
@@ -102,6 +99,8 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
             date: analysesResult.data.attributes.date,
             id: modifiedId,
             stats: analysesResult.data.attributes.stats,
+            meta: analysesResult.meta,
+            links: analysesResult.data.links,
         };
 
         let { VTtests } = await chrome.storage.sync.get(['VTtests']);
@@ -109,6 +108,7 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
         if (!VTtests) VTtests = [];
 
         VTtests.push(resultInStorage);
+        console.log(VTtests);
 
         await chrome.storage.sync.set({
             VTtests,
@@ -237,7 +237,6 @@ async function postURL(url: string) {
     );
     const data = (await response.json()) as VTPostResponse;
     data.type = 'url';
-    console.log(data);
     return data
         ? data
         : ({
@@ -271,7 +270,6 @@ async function waitForAnalysisCompletion(id: string) {
     while (true) {
         const analysis = await getAnalysis(id);
         if (analysis.data.attributes.status === 'completed') {
-            console.log(analysis);
             return analysis;
         }
         await sleep(20);

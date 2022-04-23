@@ -8,8 +8,18 @@ interface VTPostResponse {
 
 interface VTtest {
     url: string;
+    links: {
+        item: string;
+        self: string;
+    };
     date: number;
     id: string;
+    meta: {
+        [info: string]: {
+            id: string;
+            url: string;
+        };
+    };
     stats: {
         'confirmed-timeout'?: number;
         failure?: number;
@@ -23,8 +33,13 @@ interface VTtest {
 }
 
 export type Status = 'completed' | 'queued' | 'in-progress';
-
 interface VTGetAnalysis {
+    meta: {
+        [info: string]: {
+            id: string;
+            url: string;
+        };
+    };
     data: {
         attributes: {
             date: number;
@@ -50,7 +65,15 @@ interface VTGetAnalysis {
             };
             status: Status;
         };
+        links: {
+            item: string;
+            self: string;
+        };
         id: string;
         type: 'analysis';
     };
+}
+
+interface Settings {
+    downloads: boolean
 }
