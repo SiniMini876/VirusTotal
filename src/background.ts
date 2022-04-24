@@ -46,7 +46,7 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         });
         return;
     }
-
+    console.log('Started Analysing');
     const analysesResult = await waitForAnalysisCompletion(result.data.id);
 
     const resultInStorage = {
