@@ -1,14 +1,17 @@
 {
     "name": "VirusTotal",
-    "version": "1.0",
+    "version": "0.2",
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js",
         "type": "module"
     },
+    "description": "A chrome extension to scan downloaded files or urls by the VirusTotal API",
+    "author": "SiniMini876, VirusTotal API",
     "permissions": [
         "activeTab",
         "tabs",
+        "alarms",
         "storage",
         "downloads",
         "scripting",

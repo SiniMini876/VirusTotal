@@ -1,4 +1,4 @@
-import { VTPostResponse, VTGetAnalysis } from '../types/VT';
+import { VTPostResponse, VTGetAnalysis, GETRelationShip } from '../types/VT';
 
 const apikey =
     '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e';
@@ -47,90 +47,20 @@ chrome.downloads.onCreated.addListener(async (downloadedItem) => {
         return;
     }
     console.log('Started Analysing');
-    const analysesResult = await waitForAnalysisCompletion(result.data.id);
+    const analysesResult = await getAnalysis(result.data.id);
 
-    const resultInStorage = {
-        date: analysesResult.data.attributes.date,
-        id: result.data.id,
-        stats: analysesResult.data.attributes.stats,
-        meta: analysesResult.meta,
-        links: analysesResult.data.links,
-    };
-
-    const { VTtests } = await chrome.storage.sync.get(['VTtests']);
-
-    VTtests.push(resultInStorage);
-    console.log(VTtests);
-
-    await chrome.storage.sync.set({
-        VTtests,
+    chrome.alarms.create(analysesResult.data.id, {
+        periodInMinutes: 1,
     });
-
-    if (analysesResult.data.attributes.stats.malicious > 0) {
-        chrome.notifications.create({
-            title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.stats.malicious} anti viruses identified this file as malicious! It's be recommended to stop the download.`,
-            iconUrl: 'vt-200px.jpeg',
-            type: 'basic',
-        });
-        return;
-    }
-    if (analysesResult.data.attributes.stats.suspicious > 0) {
-        chrome.notifications.create({
-            title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.stats.suspicious} anti viruses identified this file as suspicious! It's be recommended to stop the download.`,
-            iconUrl: 'vt-200px.jpeg',
-            type: 'basic',
-        });
-    }
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
     const result = await postURL(info.linkUrl!);
-    let analysesResult = {} as VTGetAnalysis;
+    const analysesResult = await getAnalysis(result.data.id);
     setTimeout(async () => {
-        analysesResult = await waitForAnalysisCompletion(result.data.id);
-
-        const arrayOfId = result.data.id.split('-');
-        const modifiedId = arrayOfId[1];
-
-        const resultInStorage = {
-            url: info.linkUrl,
-            date: analysesResult.data.attributes.date,
-            id: modifiedId,
-            stats: analysesResult.data.attributes.stats,
-            meta: analysesResult.meta,
-            links: analysesResult.data.links,
-        };
-
-        let { VTtests } = await chrome.storage.sync.get(['VTtests']);
-
-        if (!VTtests) VTtests = [];
-
-        VTtests.push(resultInStorage);
-        console.log(VTtests);
-
-        await chrome.storage.sync.set({
-            VTtests,
+        chrome.alarms.create(analysesResult.data.id, {
+            periodInMinutes: 1,
         });
-
-        if (analysesResult.data.attributes.stats.malicious > 0) {
-            chrome.notifications.create({
-                title: 'Virus Total',
-                message: `WARNING!!! ${analysesResult.data.attributes.stats.malicious} anti viruses identified this website as malicious! It's be recommended to leave the page`,
-                iconUrl: 'vt-200px.jpeg',
-                type: 'basic',
-            });
-            return;
-        }
-        if (analysesResult.data.attributes.stats.suspicious > 0) {
-            chrome.notifications.create({
-                title: 'Virus Total',
-                message: `WARNING!!! ${analysesResult.data.attributes.stats.suspicious} anti viruses identified this website as suspicious! It's be recommended to leave the page`,
-                iconUrl: 'vt-200px.jpeg',
-                type: 'basic',
-            });
-        }
     }, 5000);
 });
 
@@ -266,28 +196,84 @@ async function getAnalysis(id: string) {
     return data ? data : ({} as VTGetAnalysis);
 }
 
-async function waitForAnalysisCompletion(id: string) {
-    while (true) {
-        const analysis = await getAnalysis(id);
-        if (analysis.data.attributes.status === 'completed') {
-            return analysis;
-        }
-        await sleep(20);
-    }
-}
-
-function sleep(seconds: number) {
-    return new Promise<void>((resolve) =>
-        setTimeout(() => {
-            resolve();
-        }, seconds * 1000),
-    );
-}
-
 function blobToBase64(blob: Blob) {
     return new Promise((resolve, _) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
         reader.readAsDataURL(blob);
     });
+}
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    const analysis = await getAnalysis(alarm.name);
+    console.log(analysis);
+    if (analysis.data.attributes.status === 'completed') {
+        chrome.alarms.clear(alarm.name);
+        await addTestToStorage(analysis);
+    }
+});
+
+async function getRelationShip(id: string) {
+    const options = {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'x-apikey': apikey,
+        },
+    };
+
+    const response = await fetch(
+        `https://www.virustotal.com/api/v3/analyses/${id}`,
+        options,
+    );
+    return response.json() as Promise<GETRelationShip>;
+}
+
+async function addTestToStorage(analysesResult: VTGetAnalysis) {
+    const item = await getRelationShip(analysesResult.data.id);
+
+    const resultInStorage = {
+        date: analysesResult.data.attributes.date,
+        id: analysesResult.data.id,
+        stats: analysesResult.data.attributes.stats,
+        meta: analysesResult.meta,
+        links: analysesResult.data.links,
+        sha256: '',
+    };
+
+    if (item.data.type === 'file') {
+        resultInStorage.sha256 = item.data.attributes.sha256;
+    }
+    if (item.data.type === 'url') {
+        resultInStorage.sha256 = item.data.id;
+    }
+
+    let { VTtests } = await chrome.storage.sync.get(['VTtests']);
+
+    if (!VTtests) VTtests = [];
+
+    VTtests.push(resultInStorage);
+    console.log(VTtests);
+
+    await chrome.storage.sync.set({
+        VTtests,
+    });
+
+    if (analysesResult.data.attributes.stats.malicious > 0) {
+        chrome.notifications.create({
+            title: 'Virus Total',
+            message: `WARNING!!! ${analysesResult.data.attributes.stats.malicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
+            iconUrl: 'vt-200px.jpeg',
+            type: 'basic',
+        });
+        return;
+    }
+    if (analysesResult.data.attributes.stats.suspicious > 0) {
+        chrome.notifications.create({
+            title: 'Virus Total',
+            message: `WARNING!!! ${analysesResult.data.attributes.stats.suspicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
+            iconUrl: 'vt-200px.jpeg',
+            type: 'basic',
+        });
+    }
 }
