@@ -1,32 +1,24 @@
 import { getRelationShip } from './getRelationShip';
 
-export async function addTestToStorage(
-    analysesResult: VTGetAnalysis,
-    apikey: string,
-) {
-    let item = await getRelationShip(analysesResult.data.id, apikey);
-    console.log(item);
-    if (!item.data.attributes) item = {} as GETRelationShip;
-
+export async function addTestToStorage(result: VTResponseFile | VTResponseURL) {
     const resultInStorage = {
-        date: analysesResult.data.attributes.date,
-        id: analysesResult.data.id,
-        stats: analysesResult.data.attributes.stats,
-        meta: analysesResult.meta,
-        links: analysesResult.data.links,
-        sha256: '',
+        id: result.data.id,
         lastURL: '',
+        date: result.data.attributes.last_analysis_date,
+        stats: result.data.attributes.last_analysis_stats,
+        links: result.data.links,
+        sha256: '',
         type: '',
     };
 
-    if (item.data.type === 'file') {
-        resultInStorage.sha256 = item.data.attributes.sha256;
-        resultInStorage.lastURL = item.data.links.self;
+    if (result.data.type === 'file') {
+        resultInStorage.sha256 = result.data.attributes.sha256;
+        resultInStorage.lastURL = result.data.links.self;
         resultInStorage.type = 'file';
     }
-    if (item.data.type === 'url') {
-        resultInStorage.sha256 = item.data.id;
-        resultInStorage.lastURL = item.data.attributes.last_final_url;
+    if (result.data.type === 'url') {
+        resultInStorage.sha256 = result.data.id;
+        resultInStorage.lastURL = result.data.attributes.last_final_url;
         resultInStorage.type = 'url';
     }
 
@@ -41,20 +33,20 @@ export async function addTestToStorage(
         VTtests,
     });
 
-    if (analysesResult.data.attributes.stats.malicious > 0) {
+    if (resultInStorage.stats.malicious > 0) {
         chrome.notifications.create({
             title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.stats.malicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
-            iconUrl: 'vt-200px.jpeg',
+            message: `WARNING!!! ${resultInStorage.stats.malicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
+            iconUrl: 'vt-200px.png',
             type: 'basic',
         });
         return;
     }
-    if (analysesResult.data.attributes.stats.suspicious > 0) {
+    if (resultInStorage.stats.suspicious > 0) {
         chrome.notifications.create({
             title: 'Virus Total',
-            message: `WARNING!!! ${analysesResult.data.attributes.stats.suspicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
-            iconUrl: 'vt-200px.jpeg',
+            message: `WARNING!!! ${resultInStorage.stats.suspicious} anti viruses identified this website/file as malicious! It's be recommended to leave/delete the page/file`,
+            iconUrl: 'vt-200px.png',
             type: 'basic',
         });
     }

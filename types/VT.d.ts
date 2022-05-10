@@ -86,6 +86,12 @@ interface GETRelationShip {
         self: string;
     };
 }
+interface VTResponseURL {
+    data: VTURL;
+}
+interface VTResponseFile {
+    data: VTFile;
+}
 
 interface VTFile {
     attributes: {

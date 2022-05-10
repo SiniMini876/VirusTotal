@@ -1,10 +1,9 @@
-export async function postURL(url: string) {
+export async function postURL(url: string, apikey: string) {
     const options = {
         method: 'POST',
         headers: {
             Accept: 'application/json',
-            'x-apikey':
-                '0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e',
+            'x-apikey': apikey,
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({ url }),

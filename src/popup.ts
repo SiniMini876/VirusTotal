@@ -18,10 +18,11 @@ async function initialSetup() {
     if (VTtests.length === 0) return;
 
     for (const test of VTtests) {
-        const vtScanURL = test.meta.file_info
-            ? `https://virustotal.com/gui/file/${test.sha256}`
-            : `https://virustotal.com/gui/url/${test.sha256}`;
-        const name = test.meta.file_info ? 'File' : 'Site';
+        const vtScanURL =
+            test.type === 'file'
+                ? `https://virustotal.com/gui/file/${test.sha256}`
+                : `https://virustotal.com/gui/url/${test.sha256}`;
+        const name = test.type === 'file' ? 'File' : 'Site';
         const newText = `
         <a class=stat href="${test.lastURL}" target="blank_">${name}</a>
         <br><a class=stat href=${vtScanURL} target="blank_">VT Analyses</a>
