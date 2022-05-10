@@ -1,5 +1,3 @@
-import { getRelationShip } from './getRelationShip';
-
 export async function addTestToStorage(result: VTResponseFile | VTResponseURL) {
     const resultInStorage = {
         id: result.data.id,

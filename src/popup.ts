@@ -29,7 +29,7 @@ async function initialSetup() {
         <br><div class=stat>Harmless</div>: ${test.stats.harmless}
         <br><div class=stat>Malicious</div>: ${test.stats.malicious}
         <br><div class=stat>Suspicious</div>: ${test.stats.suspicious}
-        <br><div class=stat>Suspicious</div>: ${test.stats.undetected}
+        <br><div class=stat>Undetected</div>: ${test.stats.undetected}
         <br><div class=stat>SHA256</div>: ${test.sha256}<br>`;
 
         scans_element!.innerHTML += newText;

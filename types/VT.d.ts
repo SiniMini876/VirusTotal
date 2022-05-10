@@ -279,4 +279,6 @@ interface VTURL {
 
 interface Settings {
     downloads: boolean;
+    apikey: string;
+    imageChcek: boolean
 }
