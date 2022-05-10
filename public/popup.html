@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Virus Total Extension Page</title>
+        <title>Virus Total</title>
 
         <link rel="stylesheet" href="popup.css" />
     </head>
@@ -12,12 +12,15 @@
             <p id="scans"></p>
         </div>
 
-        <button id="clearscans">Clear Scans</button>
+        <button id="clearscans" class="clearscans">Clear Scans</button>
         <div class="line"></div>
 
         <h2>Settings:</h2>
         <input type="checkbox" name="scandownloads" id="scandownloads" /> Scan
         for downlaods
+        <br />
+        <button id="changeApiKey">Click to change the API key</button>
+        <div id="template"></div>
 
         <footer class="copyright">
             Made by

@@ -8,6 +8,8 @@ interface VTPostResponse {
 
 interface VTtest {
     url: string;
+    type: 'url' | 'file';
+    lastURL: string;
     links: {
         item: string;
         self: string;
@@ -30,9 +32,10 @@ interface VTtest {
         'type-unsupported'?: number;
         undetected: number;
     };
+    sha256: string | '';
 }
 
-export type Status = 'completed' | 'queued' | 'in-progress';
+type Status = 'completed' | 'queued' | 'in-progress';
 interface VTGetAnalysis {
     meta: {
         [info: string]: {

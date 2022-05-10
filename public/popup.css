@@ -15,33 +15,55 @@ p {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+a {
+    font-weight: bold;
+    text-decoration: none;
+    color: blue;
+}
+
 .line {
     margin-top: 10px;
     margin-bottom: 10px;
     border-top: 3px solid #bbb;
 }
 
-button {
+.hidden {
+    display: inline-block;
+    visibility: hidden;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.text {
+    display: inline;
+}
+.text:hover + .hidden {
+    display: inline-block;
+    visibility: visible;
+}
+
+.clearscans {
     display: inline-block;
     text-align: center;
     background: var(--color);
     color: var(--bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     padding: 0.2em 0.4em 0.2em;
     line-height: 1;
-    border-radius: 1em;
+    border-radius: 0.7em;
     position: relative;
     min-width: 8.23em;
     text-decoration: none;
-    font-family: var(--font);
     font-size: 1rem;
 }
 
-button:hover {
+.clearscans:hover {
     transition: linear 0.2s;
-    color: white;
     cursor: pointer;
-    background: blue;
+    background: bisque;
 }
 
 .copyright {
@@ -60,4 +82,10 @@ a:hover {
     padding-right: 0.5rem /* 8px */;
     padding-top: 0.25rem /* 4px */;
     padding-bottom: 0.25rem; /* 4px ;*/
+}
+
+.stat {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    display: inline-block;
 }
