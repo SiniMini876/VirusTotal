@@ -18,7 +18,16 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 });
 
-chrome.downloads.onCreated.addListener(async (downloadedItem) => {
+chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
+    if (downloadedItem.url.length > 485) {
+        chrome.notifications.create({
+            title: 'Virus Total',
+            message: "I couldn't scan the file, proceed at your own risk.",
+            iconUrl: 'vt-200px.png',
+            type: 'basic',
+        });
+        return;
+    }
     chrome.notifications.create(`scanyesorno|${downloadedItem.url}`, {
         title: 'Virus Total',
         iconUrl: 'vt-200px.png',
