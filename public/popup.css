@@ -1,5 +1,109 @@
 h1 {
-    color: blue;
+    color: rgb(106, 106, 209);
+}
+
+@media (prefers-color-scheme: dark) {
+    h1 {
+        color: rgb(106, 106, 209);
+    }
+    body {
+        background-color: rgb(39, 38, 38);
+        color: white;
+    }
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        color: rgb(106, 106, 209);
+    }
+    .line {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-top: 3px solid #bbb;
+    }
+    .clearscans:hover {
+        transition: linear 0.2s;
+        cursor: pointer;
+        background: rgb(106, 106, 209);
+    }
+
+    .copyright {
+        font-size: 10px;
+        color: #ccc;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    a:hover {
+        color: white;
+        text-decoration: none;
+        background-color: blue;
+        border-radius: 0.5rem /* 6px */;
+        padding-left: 0.5rem /* 8px */;
+        padding-right: 0.5rem /* 8px */;
+        padding-top: 0.25rem /* 4px */;
+        padding-bottom: 0.25rem; /* 4px ;*/
+    }
+
+    .changeApiKey {
+        background: rgb(106, 106, 209);
+        border-width: 0;
+        cursor: pointer;
+        border-radius: 0.5rem /* 6px */;
+        padding-left: 0.5rem /* 8px */;
+        padding-right: 0.5rem /* 8px */;
+        padding-top: 0.25rem /* 4px */;
+        padding-bottom: 0.25rem; /* 4px ;*/
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    h1 {
+        color: blue;
+    }
+    a {
+        font-weight: bold;
+        text-decoration: none;
+        color: blue;
+    }
+    .line {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-top: 3px solid #bbb;
+    }
+    .clearscans:hover {
+        transition: linear 0.2s;
+        cursor: pointer;
+        background: rgb(199, 199, 223);
+    }
+
+    .copyright {
+        font-size: 10px;
+        color: #ccc;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    a:hover {
+        color: white;
+        text-decoration: none;
+        background-color: blue;
+        border-radius: 0.5rem /* 6px */;
+        padding-left: 0.5rem /* 8px */;
+        padding-right: 0.5rem /* 8px */;
+        padding-top: 0.25rem /* 4px */;
+        padding-bottom: 0.25rem; /* 4px ;*/
+    }
+
+    .changeApiKey {
+        background: rgb(199, 199, 223);
+        border-width: 0;
+        cursor: pointer;
+        border-radius: 0.5rem /* 6px */;
+        padding-left: 0.5rem /* 8px */;
+        padding-right: 0.5rem /* 8px */;
+        padding-top: 0.25rem /* 4px */;
+        padding-bottom: 0.25rem; /* 4px ;*/
+    }
 }
 
 .vticon {
@@ -13,18 +117,6 @@ h1 {
 
 p {
     font-family: Arial, Helvetica, sans-serif;
-}
-
-a {
-    font-weight: bold;
-    text-decoration: none;
-    color: blue;
-}
-
-.line {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-top: 3px solid #bbb;
 }
 
 .hidden {
@@ -58,30 +150,6 @@ a {
     min-width: 8.23em;
     text-decoration: none;
     font-size: 1rem;
-}
-
-.clearscans:hover {
-    transition: linear 0.2s;
-    cursor: pointer;
-    background: bisque;
-}
-
-.copyright {
-    font-size: 10px;
-    color: #ccc;
-    text-decoration: none;
-    text-align: center;
-}
-
-a:hover {
-    color: white;
-    text-decoration: none;
-    background-color: blue;
-    border-radius: 0.5rem /* 6px */;
-    padding-left: 0.5rem /* 8px */;
-    padding-right: 0.5rem /* 8px */;
-    padding-top: 0.25rem /* 4px */;
-    padding-bottom: 0.25rem; /* 4px ;*/
 }
 
 .stat {
