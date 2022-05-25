@@ -2,7 +2,44 @@ h1 {
     color: rgb(106, 106, 209);
 }
 
+body {
+    min-width: 400px;
+}
+
 @media (prefers-color-scheme: dark) {
+    .apitextinput {
+        line-height: 25px;
+        border-color: #5e5df0;
+        background-color: rgb(56, 54, 54);
+        padding-right: 20px;
+        color: white;
+        border-width: 2px;
+        caret-color: white;
+        border-radius: 5px;
+        outline-color: #5e5df0;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 8px;
+        background: rgb(39, 38, 38);
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: rgb(39, 38, 38);
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: rgb(106, 106, 209);
+        border-radius: 4px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        transition: linear 0.2s;
+        background: rgb(78, 78, 243);
+    }
     h1 {
         color: rgb(106, 106, 209);
     }
@@ -57,6 +94,38 @@ h1 {
 }
 
 @media (prefers-color-scheme: light) {
+    .apitextinput {
+        line-height: 25px;
+        border-color: #5e5df0;
+        background-color: rgb(255, 255, 255);
+        padding-right: 20px;
+        color: black;
+        border-width: 2px;
+        caret-color: black;
+        border-radius: 5px;
+        outline-color: #5e5df0;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: white;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: rgb(78, 78, 243);
+        border-radius: 4px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        transition: linear 0.2s;
+        background: blue;
+    }
     h1 {
         color: blue;
     }
@@ -93,26 +162,10 @@ h1 {
         padding-top: 0.25rem /* 4px */;
         padding-bottom: 0.25rem; /* 4px ;*/
     }
-
-    .changeApiKey {
-        background: rgb(199, 199, 223);
-        border-width: 0;
-        cursor: pointer;
-        border-radius: 0.5rem /* 6px */;
-        padding-left: 0.5rem /* 8px */;
-        padding-right: 0.5rem /* 8px */;
-        padding-top: 0.25rem /* 4px */;
-        padding-bottom: 0.25rem; /* 4px ;*/
-    }
 }
 
 .vticon {
     float: right;
-}
-
-.vticon:hover {
-    width: 58px;
-    transition: linear 0.5s;
 }
 
 p {
@@ -135,25 +188,167 @@ p {
     display: inline-block;
     visibility: visible;
 }
-
 .clearscans {
-    display: inline-block;
-    text-align: center;
-    background: var(--color);
-    color: var(--bg);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: bold;
-    padding: 0.2em 0.4em 0.2em;
-    line-height: 1;
-    border-radius: 0.7em;
-    position: relative;
-    min-width: 8.23em;
-    text-decoration: none;
-    font-size: 1rem;
+    background: #5e5df0;
+    border-radius: 999px;
+    box-shadow: #5e5df0 0 10px 20px -10px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: Inter, Helvetica, 'Apple Color Emoji', 'Segoe UI Emoji',
+        NotoColorEmoji, 'Noto Color Emoji', 'Segoe UI Symbol', 'Android Emoji',
+        EmojiSymbols, -apple-system, system-ui, 'Segoe UI', Roboto,
+        'Helvetica Neue', 'Noto Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    opacity: 1;
+    outline: 0 solid transparent;
+    padding: 8px 18px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: fit-content;
+    word-break: break-word;
+    border: 0;
 }
 
 .stat {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 15px;
     display: inline-block;
+}
+
+.changeApiKey {
+    appearance: button;
+    backface-visibility: hidden;
+    background-color: #5e5df0;
+    border-radius: 6px;
+    border-width: 0;
+    box-shadow: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+        rgba(50, 50, 93, 0.1) 0 2px 5px 0, rgba(0, 0, 0, 0.07) 0 1px 1px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-family: -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue',
+        Ubuntu, sans-serif;
+    font-size: 100%;
+    height: 22px;
+    line-height: 1.15;
+    margin: 6px 0 0;
+    outline: none;
+    overflow: hidden;
+    padding: 0 25px;
+    position: relative;
+    text-align: center;
+    text-transform: none;
+    transform: translateZ(0);
+    transition: all 0.2s, box-shadow 0.08s ease-in;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.changeApiKey:disabled {
+    cursor: default;
+}
+
+.changeApiKey:focus {
+    box-shadow: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+        rgba(50, 50, 93, 0.2) 0 6px 15px 0, rgba(0, 0, 0, 0.1) 0 2px 2px 0,
+        rgba(50, 151, 211, 0.3) 0 0 0 4px;
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: '';
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: #5e5df0;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #5e5df0;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.textscandownloads {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.apisubmit {
+    background: #5e5df0;
+    border-radius: 999px;
+    box-shadow: #5e5df0 0 10px 20px -10px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: Inter, Helvetica, 'Apple Color Emoji', 'Segoe UI Emoji',
+        NotoColorEmoji, 'Noto Color Emoji', 'Segoe UI Symbol', 'Android Emoji',
+        EmojiSymbols, -apple-system, system-ui, 'Segoe UI', Roboto,
+        'Helvetica Neue', 'Noto Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 25px;
+    opacity: 1;
+    outline: 0 solid transparent;
+    padding: 2px 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: fit-content;
+    word-break: break-word;
+    border: 0;
 }

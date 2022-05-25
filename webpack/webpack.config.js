@@ -5,7 +5,6 @@ module.exports = {
     entry: {
         background: path.resolve(__dirname, '..', 'src', 'background.ts'),
         popup: path.resolve(__dirname, '..', 'src', 'popup.ts'),
-        option: path.resolve(__dirname, '..', 'src', 'option.ts'),
     },
     output: {
         path: path.join(__dirname, '../dist'),

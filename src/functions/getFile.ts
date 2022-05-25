@@ -6,11 +6,14 @@ export async function getFile(sha256: string, apikey: string) {
             'x-apikey': apikey,
         },
     };
-
-    const response = await fetch(
-        `https://www.virustotal.com/api/v3/files/${sha256}`,
-        options,
-    );
-    const data = (await response.json()) as VTResponseFile;
-    return data ? data : ({} as VTResponseFile);
+    try {
+        const response = await fetch(
+            `https://www.virustotal.com/api/v3/files/${sha256}`,
+            options,
+        );
+        const data = (await response.json()) as VTResponseFile;
+        return data ? data : ({} as VTResponseFile);
+    } catch (err) {
+        return {} as VTResponseFile;
+    }
 }

@@ -34,8 +34,6 @@ async function initialSetup() {
 
         scans_element!.innerHTML += newText;
     }
-
-    template!.innerHTML = `<div class="text">Current API Key:</div> <div class="hidden">${settings.apikey}</div><br>`;
 }
 function clearTests() {
     chrome.storage.sync.set({ VTtests: [] });
@@ -60,13 +58,14 @@ changeAPIKey?.addEventListener('click', () => {
     const textInput = document.createElement('input');
     const submit = document.createElement('button');
     submit.innerText = 'Submit';
+    textInput.className = 'apitextinput';
+    submit.className = 'apisubmit';
 
     template?.appendChild(textInput);
     template?.appendChild(submit);
 
     submit.addEventListener('click', async () => {
         const newApiKey = textInput.value;
-        template!.innerHTML = `<div class="text">Current API Key:</div> <div class="hidden">${newApiKey}</div><br>`;
 
         let { settings } = await chrome.storage.sync.get(['settings']);
         if (!settings) {
@@ -77,6 +76,9 @@ changeAPIKey?.addEventListener('click', () => {
         }
         settings.apikey = newApiKey;
         await chrome.storage.sync.set({ settings });
+
+        template?.removeChild(textInput);
+        template?.removeChild(submit);
     });
 });
 

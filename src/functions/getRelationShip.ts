@@ -7,9 +7,13 @@ export async function getRelationShip(id: string, apikey: string) {
         },
     };
 
-    const response = await fetch(
-        `https://www.virustotal.com/api/v3/analyses/${id}/item`,
-        options,
-    );
-    return response.json() as Promise<GETRelationShip>;
+    try {
+        const response = await fetch(
+            `https://www.virustotal.com/api/v3/analyses/${id}/item`,
+            options,
+        );
+        return response.json() as Promise<GETRelationShip>;
+    } catch (err) {
+        return {};
+    }
 }

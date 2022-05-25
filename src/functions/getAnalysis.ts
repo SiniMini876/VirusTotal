@@ -8,10 +8,14 @@ export async function getAnalysis(id: string, apikey: string) {
     };
 
     const modifiedId = encodeURIComponent(id);
-    const response = await fetch(
-        `https://www.virustotal.com/api/v3/analyses/${modifiedId}`,
-        options,
-    );
-    const data = (await response.json()) as VTGetAnalysis;
-    return data ? data : ({} as VTGetAnalysis);
+    try {
+        const response = await fetch(
+            `https://www.virustotal.com/api/v3/analyses/${modifiedId}`,
+            options,
+        );
+        const data = (await response.json()) as VTGetAnalysis;
+        return data ? data : ({} as VTGetAnalysis);
+    } catch (err) {
+        return {} as VTGetAnalysis;
+    }
 }

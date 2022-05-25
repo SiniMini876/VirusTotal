@@ -19,6 +19,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
+    console.log('Proccesing...');
     if (downloadedItem.url.length > 485) {
         chrome.notifications.create({
             title: 'Virus Total',
@@ -26,22 +27,29 @@ chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
             iconUrl: 'vt-200px.png',
             type: 'basic',
         });
+        console.log('large');
         return;
     }
-    chrome.notifications.create(`scanyesorno|${downloadedItem.url}`, {
-        title: 'Virus Total',
-        iconUrl: 'vt-200px.png',
-        message: 'Do you want to scan the file?',
-        type: 'basic',
-        buttons: [
-            {
-                title: 'Yes',
-            },
-            {
-                title: 'No',
-            },
-        ],
-    });
+    chrome.notifications.create(
+        `scanyesorno|${downloadedItem.url}`,
+        {
+            title: 'Virus Total',
+            iconUrl: 'vt-200px.png',
+            message: 'Do you want to scan the file?',
+            type: 'basic',
+            buttons: [
+                {
+                    title: 'Yes',
+                },
+                {
+                    title: 'No',
+                },
+            ],
+        },
+        (id) => {
+            console.log(id);
+        },
+    );
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
