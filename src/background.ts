@@ -1,6 +1,4 @@
-import { addTestToStorage } from './functions/addTestToStorage';
-import { getFile } from './functions/getFile';
-import { getURL } from './functions/getURL';
+import { handleAlarm } from './functions/handleAlarm';
 import { handleFileScan } from './functions/handleFileScan';
 import { postURL } from './functions/postURL';
 
@@ -19,7 +17,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
-    console.log('Proccesing...');
+    console.log('Started Processing');
     if (downloadedItem.url.length > 485) {
         chrome.notifications.create({
             title: 'Virus Total',
@@ -27,29 +25,22 @@ chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
             iconUrl: 'vt-200px.png',
             type: 'basic',
         });
-        console.log('large');
         return;
     }
-    chrome.notifications.create(
-        `scanyesorno|${downloadedItem.url}`,
-        {
-            title: 'Virus Total',
-            iconUrl: 'vt-200px.png',
-            message: 'Do you want to scan the file?',
-            type: 'basic',
-            buttons: [
-                {
-                    title: 'Yes',
-                },
-                {
-                    title: 'No',
-                },
-            ],
-        },
-        (id) => {
-            console.log(id);
-        },
-    );
+    chrome.notifications.create(`scanyesorno|${downloadedItem.url}`, {
+        title: 'Virus Total',
+        iconUrl: 'vt-200px.png',
+        message: 'Do you want to scan the file?',
+        type: 'basic',
+        buttons: [
+            {
+                title: 'Yes',
+            },
+            {
+                title: 'No',
+            },
+        ],
+    });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
@@ -64,30 +55,7 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-    const { settings } = await chrome.storage.sync.get(['settings']);
-    const { apikey } = settings;
-    const prefix = alarm.name.split('|')[0];
-    if (prefix === 'urlreport') {
-        const id = alarm.name.split('|')[1];
-        const modifiedId = id.split('-')[1];
-        console.log(prefix, id, modifiedId);
-        setTimeout(async () => {
-            const urlreport = await getURL(modifiedId, apikey);
-            console.log(urlreport);
-            await addTestToStorage(urlreport);
-            chrome.alarms.clear(alarm.name);
-        }, 15000);
-    }
-    if (prefix === 'filereport') {
-        const sha256 = alarm.name.split('|')[1];
-        const filereport = await getFile(sha256, apikey);
-        console.log(prefix, sha256);
-        if (filereport.data.attributes.names.length !== 0) {
-            chrome.alarms.clear(alarm.name);
-            console.log(filereport);
-            await addTestToStorage(filereport);
-        }
-    }
+    await handleAlarm(alarm);
 });
 
 chrome.notifications.onButtonClicked.addListener(async (id, index) => {

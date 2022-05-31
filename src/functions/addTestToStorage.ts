@@ -25,7 +25,6 @@ export async function addTestToStorage(result: VTResponseFile | VTResponseURL) {
     if (!VTtests) VTtests = [];
 
     VTtests.push(resultInStorage);
-    console.log(VTtests);
 
     await chrome.storage.sync.set({
         VTtests,

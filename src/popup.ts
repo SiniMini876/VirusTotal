@@ -19,11 +19,10 @@ async function initialSetup() {
     if (VTtests.length === 0) return;
     const allAlarms = await chrome.alarms.getAll();
     for (const alarm of allAlarms) {
-        const url = alarm.name.split('|')[1];
-        const prefix = alarm.name.split('|')[0];
+        const [prefix, url] = alarm.name.split('|');
         const date = new Date(alarm.scheduledTime);
         const newAlarm = `
-        <a href="${url}">${prefix.includes('file') ? 'File' : 'URL'}</a>
+        <a href="${url}">${prefix.toLocaleUpperCase()}</a>
         ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}<br>`;
 
         progress!.innerHTML += newAlarm;
