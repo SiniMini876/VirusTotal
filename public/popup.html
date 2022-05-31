@@ -8,6 +8,8 @@
     <body>
         <img src="vt-48px.png" alt="" class="vticon" />
         <div>
+            <h1>Scans in progress:</h1>
+            <p id="progress" class="progress"></p>
             <h1>Last Scans:</h1>
             <p id="scans"></p>
         </div>
@@ -16,12 +18,22 @@
         <div class="line"></div>
 
         <h2>Settings:</h2>
-        <input type="checkbox" name="scandownloads" id="scandownloads" /> Scan
-        for downlaods
-        <br />
-        <button id="changeApiKey">Click to change the API key</button>
-        <div id="template"></div>
+        <label class="switch">
+            <input
+                type="checkbox"
+                name="scandownloads"
+                id="scandownloads"
+                class="scandownloads"
+            />
+            <span class="slider round"></span>
+        </label>
+        <div class="textscandownloads">Scan for income downlaods</div>
 
+        <br />
+        <button id="changeApiKey" class="changeApiKey">
+            Click to change the API key
+        </button>
+        <div id="template"></div>
         <footer class="copyright">
             Made by
             <a href="https://www.github.com/SiniMini876" target="_blank"

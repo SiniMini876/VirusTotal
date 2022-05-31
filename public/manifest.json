@@ -6,7 +6,7 @@
         "service_worker": "background.js",
         "type": "module"
     },
-    "description": "A chrome extension to scan downloaded files or urls by the VirusTotal API",
+    "description": "The best chrome extension to scan your files with VirusTotal",
     "author": "SiniMini876, VirusTotal API",
     "permissions": [
         "activeTab",

@@ -1,7 +1,5 @@
-import { addTestToStorage } from './functions/addTestToStorage';
-import { getAnalysis } from './functions/getAnalysis';
-import { postFile200MB } from './functions/postFile200MB';
-import { postFile32MB } from './functions/postFile32MB';
+import { handleAlarm } from './functions/handleAlarm';
+import { handleFileScan } from './functions/handleFileScan';
 import { postURL } from './functions/postURL';
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -18,87 +16,58 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 });
 
-chrome.downloads.onCreated.addListener(async (downloadedItem) => {
-    // const popup = await chrome.windows.create({
-    //     focused: true,
-    //     width: 400,
-    //     height: 205,
-    //     type: 'popup',
-    //     url: 'option.html',
-    //     top: 40,
-    //     left: 35,
-    // });
-    // chrome.runtime.onMessage.addListener(async (request, sender) => {
-    //     if (sender.tab!.id! !== popup.tabs![0].id) return;
-    //     chrome.windows.remove(popup.id!);
-    //     if (request === 'no') {
-    //         console.log('Received NO!');
-    //         return;
-    //     }
-    //     console.log('Received YES');
-
-        const { settings } = await chrome.storage.sync.get(['settings']);
-        const { apikey } = settings;
-        if (settings && !settings.downloads) return;
-        let result: VTPostResponse = {
-            data: {
-                id: '',
-                type: '',
-            },
-            type: 'file',
-        };
-        if (downloadedItem.fileSize > 3.2e7)
-            result = await postFile32MB(downloadedItem, apikey);
-        if (downloadedItem.fileSize < 2e8)
-            result = await postFile200MB(downloadedItem, apikey);
-        if (downloadedItem.fileSize > 2e8) {
-            chrome.notifications.create({
-                title: 'Virus Total',
-                message:
-                    "The file is over 200MB, I couldn't scan the file, proceed at your own risk.",
-                iconUrl: 'vt-200px.jpeg',
-                type: 'basic',
-            });
-            return;
-        }
-
-        if (!result.data.id) {
-            chrome.notifications.create({
-                title: 'Virus Total',
-                message: "I couldn't scan the file, proceed at your own risk.",
-                iconUrl: 'vt-200px.jpeg',
-                type: 'basic',
-            });
-            return;
-        }
-        console.log('Started Analysing');
-        const analysesResult = await getAnalysis(result.data.id, apikey);
-
-        chrome.alarms.create(analysesResult.data.id, {
-            periodInMinutes: 1,
+chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
+    console.log('Started Processing');
+    if (downloadedItem.url.length > 485) {
+        chrome.notifications.create({
+            title: 'Virus Total',
+            message: "I couldn't scan the file, proceed at your own risk.",
+            iconUrl: 'vt-200px.png',
+            type: 'basic',
         });
-    // });
+        return;
+    }
+    chrome.notifications.create(`scanyesorno|${downloadedItem.url}`, {
+        title: 'Virus Total',
+        iconUrl: 'vt-200px.png',
+        message: 'Do you want to scan the file?',
+        type: 'basic',
+        buttons: [
+            {
+                title: 'Yes',
+            },
+            {
+                title: 'No',
+            },
+        ],
+    });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
     const { settings } = await chrome.storage.sync.get(['settings']);
     const { apikey } = settings;
-    const result = await postURL(info.linkUrl!);
-    const analysesResult = await getAnalysis(result.data.id, apikey);
+    const result = await postURL(info.linkUrl!, apikey);
     setTimeout(async () => {
-        chrome.alarms.create(analysesResult.data.id, {
+        chrome.alarms.create(`urlreport|${result.data.id}`, {
             periodInMinutes: 1,
         });
-    }, 5000);
+    }, 15000);
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
+    await handleAlarm(alarm);
+});
+
+chrome.notifications.onButtonClicked.addListener(async (id, index) => {
+    const args = id.split('|');
     const { settings } = await chrome.storage.sync.get(['settings']);
-    const { apikey } = settings;
-    const analysis = await getAnalysis(alarm.name, apikey);
-    console.log(analysis);
-    if (analysis.data.attributes.status === 'completed') {
-        chrome.alarms.clear(alarm.name);
-        await addTestToStorage(analysis, apikey);
+
+    if (id === 'imageCheck') {
+        settings.imageCheck = true;
+        await chrome.storage.sync.set({ settings });
+    }
+
+    if (args[0] === 'scanyesorno' && index === 0) {
+        await handleFileScan(args, settings);
     }
 });
