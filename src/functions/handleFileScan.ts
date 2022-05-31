@@ -31,9 +31,10 @@ export async function handleFileScan(args: string[], settings: any) {
             });
             return;
         }
+        console.log(urlReport);
         if (
             urlReport.data.attributes.last_http_response_headers[
-                'content-type'
+                'Content-Type'
             ].includes('image')
         ) {
             if (settings.imageCheck) {

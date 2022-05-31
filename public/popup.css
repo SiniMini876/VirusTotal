@@ -6,6 +6,11 @@ body {
     min-width: 400px;
 }
 
+.progress {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+}
+
 @media (prefers-color-scheme: dark) {
     .apitextinput {
         line-height: 25px;
