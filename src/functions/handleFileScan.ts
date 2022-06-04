@@ -17,8 +17,8 @@ export async function handleFileScan(args: string[], settings: any) {
     }
 
     const modifiedId = result.data.id.split('-')[1];
-
-    chrome.alarms.create(`urlfilereport|${modifiedId}`, {
+    console.log(`urlfilereport|${modifiedId}|${url}`);
+    chrome.alarms.create(`urlfilereport|${modifiedId}|${url}`, {
         periodInMinutes: 1,
     });
 }

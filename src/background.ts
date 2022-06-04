@@ -48,7 +48,7 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
     const { apikey } = settings;
     const result = await postURL(info.linkUrl!, apikey);
     setTimeout(async () => {
-        chrome.alarms.create(`urlreport|${result.data.id}`, {
+        chrome.alarms.create(`urlreport|${result.data.id}|${info.linkUrl}`, {
             periodInMinutes: 1,
         });
     }, 15000);

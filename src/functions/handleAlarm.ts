@@ -5,14 +5,14 @@ import { getURL } from './getURL';
 export async function handleAlarm(alarm: chrome.alarms.Alarm) {
     const { settings } = await chrome.storage.sync.get(['settings']);
     const { apikey } = settings;
-    const [prefix, id] = alarm.name.split('|');
+    const [prefix, id, url] = alarm.name.split('|');
     switch (prefix) {
         case 'urlreport':
             const modifiedId = id.split('-')[1];
             setTimeout(async () => {
                 const urlreport = await getURL(modifiedId, apikey);
-                await addTestToStorage(urlreport);
-                console.log('Got URL report')
+                await addTestToStorage(urlreport, url);
+                console.log('Got URL report');
                 chrome.alarms.clear(alarm.name);
             }, 15000);
             break;
@@ -22,7 +22,7 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm) {
             if (filereport.data.attributes.names.length !== 0) {
                 chrome.alarms.clear(alarm.name);
                 console.log('Got file report');
-                await addTestToStorage(filereport);
+                await addTestToStorage(filereport, url);
             }
             break;
         case 'urlfilereport':
@@ -46,7 +46,7 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm) {
                 ].includes('image')
             ) {
                 if (settings.imageCheck) {
-                    await addTestToStorage(urlReport);
+                    await addTestToStorage(urlReport, url);
                     break;
                 }
                 chrome.notifications.create('imageCheck', {
@@ -61,11 +61,11 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm) {
                         },
                     ],
                 });
-                await addTestToStorage(urlReport);
+                await addTestToStorage(urlReport, url);
                 break;
             }
             chrome.alarms.create(
-                `filereport|${urlReport.data.attributes.last_http_response_content_sha256}`,
+                `filereport|${urlReport.data.attributes.last_http_response_content_sha256}|${url}`,
                 {
                     periodInMinutes: 1,
                 },
