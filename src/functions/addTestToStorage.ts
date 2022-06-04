@@ -1,7 +1,11 @@
-export async function addTestToStorage(result: VTResponseFile | VTResponseURL) {
+export async function addTestToStorage(
+    result: VTResponseFile | VTResponseURL,
+    URL: string,
+) {
+    console.log(result);
     const resultInStorage = {
         id: result.data.id,
-        lastURL: '',
+        url: URL,
         date: result.data.attributes.last_analysis_date,
         stats: result.data.attributes.last_analysis_stats,
         links: result.data.links,
@@ -11,12 +15,10 @@ export async function addTestToStorage(result: VTResponseFile | VTResponseURL) {
 
     if (result.data.type === 'file') {
         resultInStorage.sha256 = result.data.attributes.sha256;
-        resultInStorage.lastURL = result.data.links.self;
         resultInStorage.type = 'file';
     }
     if (result.data.type === 'url') {
         resultInStorage.sha256 = result.data.id;
-        resultInStorage.lastURL = result.data.attributes.last_final_url;
         resultInStorage.type = 'url';
     }
 

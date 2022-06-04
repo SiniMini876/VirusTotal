@@ -9,7 +9,6 @@ interface VTPostResponse {
 interface VTtest {
     url: string;
     type: 'url' | 'file';
-    lastURL: string;
     links: {
         item: string;
         self: string;
