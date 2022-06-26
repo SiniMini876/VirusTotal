@@ -1,0 +1,11 @@
+.copyright {
+	font-size: 13px;
+	color: #ccc;
+	text-decoration: none;
+	text-align: center;
+}
+@media (prefers-color-scheme: dark) {
+	.copyright {
+		color: #ccc;
+	}
+}

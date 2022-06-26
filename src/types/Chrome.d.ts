@@ -1,4 +1,3 @@
-
 interface StorageVTScans {
     VTtests: VTtest[];
 }

@@ -1,37 +1,37 @@
 {
-    "name": "VirusTotal",
-    "version": "0.2",
-    "manifest_version": 3,
-    "background": {
-        "service_worker": "background.js",
-        "type": "module"
-    },
-    "description": "The best chrome extension to scan your files with VirusTotal",
-    "author": "SiniMini876, VirusTotal API",
-    "permissions": [
-        "activeTab",
-        "tabs",
-        "alarms",
-        "storage",
-        "downloads",
-        "scripting",
-        "notifications",
-        "contextMenus"
-    ],
-    "host_permissions": ["*://*/*"],
-    "action": {
-        "default_popup": "popup.html",
-        "default_icon": {
-            "16": "/vt-16px.png",
-            "32": "/vt-32px.png",
-            "48": "/vt-48px.png",
-            "128": "/vt-128px.png"
-        }
-    },
-    "icons": {
-        "16": "/vt-16px.png",
-        "32": "/vt-32px.png",
-        "48": "/vt-48px.png",
-        "128": "/vt-128px.png"
-    }
+	"name": "VirusTotal",
+	"version": "0.2",
+	"manifest_version": 3,
+	"background": {
+		"service_worker": "./static/js/content.js",
+		"type": "module"
+	},
+	"description": "The best chrome extension to scan your files with VirusTotal",
+	"author": "SiniMini876, VirusTotal API",
+	"permissions": [
+		"activeTab",
+		"tabs",
+		"alarms",
+		"storage",
+		"downloads",
+		"scripting",
+		"notifications",
+		"contextMenus"
+	],
+	"host_permissions": ["*://*/*"],
+	"action": {
+		"default_popup": "index.html",
+		"default_icon": {
+			"16": "img/vt-16px.png",
+			"32": "img/vt-32px.png",
+			"48": "img/vt-48px.png",
+			"128": "img/vt-128px.png"
+		}
+	},
+	"icons": {
+		"16": "img/vt-16px.png",
+		"32": "img/vt-32px.png",
+		"48": "img/vt-48px.png",
+		"128": "img/vt-128px.png"
+	}
 }

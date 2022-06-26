@@ -1,0 +1,41 @@
+.progress {
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	font-size: 15px;
+}
+
+.progressbar {
+	display: inline-block;
+	position: relative;
+	width: 100px;
+	height: 20px;
+	background: #8991bd;
+	border-radius: 5px;
+	transform: translateY(20%);
+	overflow: hidden;
+}
+
+.progressbar__fill {
+	width: 0%;
+	height: 100%;
+	background: rgb(56, 56, 230);
+	transition: all 0.2s;
+}
+
+.progressbar__text {
+	position: absolute;
+	top: 50%;
+	right: 5px;
+	transform: translateY(-50%);
+	font: bold 14px "Quicksand", sans-serif;
+	color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+	.progressbar {
+		background: #4b4f64;
+	}
+
+	.progressbar__fill {
+		background: var(--dark-color);
+	}
+}
