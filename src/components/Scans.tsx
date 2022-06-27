@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "../css/Scans.css";
 
-function Scans(props: any) {
+function Scans() {
 	const [tests, setTests] = useState<VTtest[]>([]);
-	const [results, setResults] = useState<VTtest[]>([]);
+	const [results, setResults] = useState<string[]>([]);
 
 	useEffect(() => {
 		async function chromeTests() {
@@ -12,28 +12,16 @@ function Scans(props: any) {
 			])) as StorageVTScans;
 
 			if (!VTtests) VTtests = [];
-
+			const res = [];
 			setTests(VTtests);
-			setResults(VTtests);
+			for (const test of VTtests) {
+				res.push(test.sha256);
+			}
+			setResults(res);
 		}
 
 		chromeTests();
 	}, []);
-
-	useEffect(() => {
-		async function chromeTests() {
-			let { VTtests } = (await chrome.storage.sync.get([
-				"VTtests",
-			])) as StorageVTScans;
-
-			if (!VTtests) VTtests = [];
-
-			setTests(VTtests);
-			setResults(VTtests);
-		}
-
-		chromeTests();
-	}, [props]);
 
 	function searchInputFunc(e: any) {
 		const { value } = e.target;
@@ -42,7 +30,7 @@ function Scans(props: any) {
 
 		for (const test of tests) {
 			if (test.url.includes(value)) {
-				testsToShow.push(test);
+				testsToShow.push(test.sha256);
 			}
 		}
 
@@ -58,7 +46,9 @@ function Scans(props: any) {
 				className="search_bar"
 				placeholder="Search by URL"
 			/>
-			{results.map((scan) => {
+			{results.map((sha256) => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const scan = tests.find((test) => test.sha256 === sha256)!;
 				const vtScanURL =
 					scan.type === "file"
 						? `https://virustotal.com/gui/file/${scan.sha256}`

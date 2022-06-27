@@ -13,6 +13,7 @@
     "@types/react-dom": "^18.0.5",
     "dompurify": "^2.3.8",
     "jsdom": "^20.0.0",
+    "nth-check": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

@@ -1,4 +1,3 @@
-
 .settings_submit {
 	display: block;
 	background: var(--glurple-color);
@@ -100,7 +99,7 @@ input:checked + .slider:before {
 
 .apitextinput {
 	display: inline-block;
-	min-width: 15%;
+	min-width: 250px;
 	height: 25px;
 	outline-color: var(--glurple-color);
 	border-width: 0;

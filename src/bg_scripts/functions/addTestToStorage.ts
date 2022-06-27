@@ -1,3 +1,4 @@
+import { getSettings, getTests } from "./getChromeStorage";
 import { getURLWidget } from "./getURLWidget";
 
 export async function addTestToStorage(
@@ -5,7 +6,13 @@ export async function addTestToStorage(
 	URL: string
 ) {
 	console.log(result);
-	const resultInStorage = {
+	chrome.notifications.create({
+		title: "Virus Total",
+		message: "The file/url report just got added!",
+		iconUrl: "vt-200px.png",
+		type: "basic",
+	});
+	const resultInStorage: VTtest = {
 		id: result.data.id,
 		url: URL,
 		date: result.data.attributes.last_analysis_date,
@@ -25,9 +32,7 @@ export async function addTestToStorage(
 		resultInStorage.type = "url";
 	}
 
-	const { settings } = (await chrome.storage.sync.get(["settings"])) as {
-		settings: Settings;
-	};
+	const settings = await getSettings();
 
 	const widgetResponse = await getURLWidget(
 		resultInStorage.sha256,
@@ -35,7 +40,7 @@ export async function addTestToStorage(
 	);
 	resultInStorage.widget = widgetResponse.data.url;
 
-	let { VTtests } = await chrome.storage.sync.get(["VTtests"]);
+	let VTtests = await getTests();
 
 	if (!VTtests) VTtests = [];
 

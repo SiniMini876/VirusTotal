@@ -10,14 +10,14 @@ interface VTPostResponse {
 
 interface VTtest {
 	url: string;
-	type: "url" | "file";
+	type: "url" | "file" | "";
 	links: {
-		item: string;
-		self: string;
+		item?: string;
+		self?: string;
 	};
 	date: number;
 	id: string;
-	meta: {
+	meta?: {
 		[info: string]: {
 			id: string;
 			url: string;
@@ -288,5 +288,5 @@ interface VTURL {
 interface Settings {
 	downloads: boolean;
 	apikey: string;
-	imageChcek: boolean;
+	notSupportedChecked: boolean;
 }

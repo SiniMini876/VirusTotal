@@ -1,10 +1,11 @@
 /* eslint-disable no-case-declarations */
 import { addTestToStorage } from "./addTestToStorage";
+import { getSettings } from "./getChromeStorage";
 import { getFile } from "./getFile";
 import { getURL } from "./getURL";
 
 export async function handleAlarm(alarm: chrome.alarms.Alarm) {
-	const { settings } = await chrome.storage.sync.get(["settings"]);
+	const settings = await getSettings();
 	const { apikey } = settings;
 	const [prefix, id, url] = alarm.name.split("|");
 	switch (prefix) {
@@ -40,7 +41,11 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm) {
 			});
 			return;
 		}
-		if (urlReport.data.attributes.tags.length === 0) break;
+		if (
+			urlReport.data.attributes.last_http_response_content_sha256
+				.length === 0
+		)
+			break;
 		await chrome.alarms.clear(alarm.name);
 		console.log("Got file URL report");
 		if (
@@ -48,11 +53,11 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm) {
 				"Content-Type"
 			].includes("image")
 		) {
-			if (settings.imageCheck) {
+			if (settings.notSupportedChecked) {
 				await addTestToStorage(urlReport, url);
 				break;
 			}
-			chrome.notifications.create("imageCheck", {
+			chrome.notifications.create("notSupportedChecked", {
 				title: "Virus Total",
 				message:
 						"Can't scan an image, scanned the url, proceed at your own risk.",

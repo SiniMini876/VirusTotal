@@ -1,6 +1,6 @@
 import { postURL } from "./postURL";
 
-export async function handleFileScan(args: string[], settings: any) {
+export async function handleFileScan(args: string[], settings: Settings) {
 	const url = args[1];
 
 	const { apikey } = settings;

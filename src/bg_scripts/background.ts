@@ -1,3 +1,4 @@
+import { getSettings } from "./functions/getChromeStorage";
 import { handleAlarm } from "./functions/handleAlarm";
 import { handleFileScan } from "./functions/handleFileScan";
 import { postURL } from "./functions/postURL";
@@ -12,6 +13,7 @@ chrome.runtime.onInstalled.addListener(() => {
 		settings: {
 			downloads: true,
 			apikey: "0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e",
+			notSupportedChecked: false,
 		},
 	});
 });
@@ -44,7 +46,7 @@ chrome.downloads.onDeterminingFilename.addListener((downloadedItem) => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
-	const { settings } = await chrome.storage.sync.get(["settings"]);
+	const settings = await getSettings();
 	const { apikey } = settings;
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const result = await postURL(info.linkUrl!, apikey);
@@ -61,10 +63,10 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 chrome.notifications.onButtonClicked.addListener(async (id, index) => {
 	const args = id.split("|");
-	const { settings } = await chrome.storage.sync.get(["settings"]);
+	const settings = await getSettings();
 
-	if (id === "imageCheck") {
-		settings.imageCheck = true;
+	if (id === "notSupportedChecked") {
+		settings.notSupportedChecked = true;
 		await chrome.storage.sync.set({ settings });
 	}
 
