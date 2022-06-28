@@ -3,7 +3,7 @@ import "../css/Scans.css";
 
 function Scans() {
 	const [tests, setTests] = useState<VTtest[]>([]);
-	const [results, setResults] = useState<string[]>([]);
+	const [results, setResults] = useState<VTtest[]>([]);
 
 	useEffect(() => {
 		async function chromeTests() {
@@ -12,12 +12,8 @@ function Scans() {
 			])) as StorageVTScans;
 
 			if (!VTtests) VTtests = [];
-			const res = [];
 			setTests(VTtests);
-			for (const test of VTtests) {
-				res.push(test.sha256);
-			}
-			setResults(res);
+			setResults(VTtests);
 		}
 
 		chromeTests();
@@ -30,7 +26,7 @@ function Scans() {
 
 		for (const test of tests) {
 			if (test.url.includes(value)) {
-				testsToShow.push(test.sha256);
+				testsToShow.push(test);
 			}
 		}
 
@@ -46,9 +42,8 @@ function Scans() {
 				className="search_bar"
 				placeholder="Search by URL"
 			/>
-			{results.map((sha256) => {
+			{results.map((scan) => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				const scan = tests.find((test) => test.sha256 === sha256)!;
 				const vtScanURL =
 					scan.type === "file"
 						? `https://virustotal.com/gui/file/${scan.sha256}`

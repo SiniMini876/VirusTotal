@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(() => {
 	chrome.storage.sync.set({
 		settings: {
 			downloads: true,
-			apikey: "0884cf2c2e6d77db8a6bf524d38b6aff88ccee7b61cde1621799d63da1958c6e",
+			apikey: process.env.REACT_APP_APIKEY ?? "",
 			notSupportedChecked: false,
 		},
 	});
