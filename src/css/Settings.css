@@ -32,6 +32,7 @@
 	display: inline-block;
 	width: 30px;
 	height: 17px;
+	bottom: 0.5px;
 }
 
 /* Hide default HTML checkbox */

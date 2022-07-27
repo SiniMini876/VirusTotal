@@ -13,6 +13,7 @@ export async function addTestToStorage(
 		type: "basic",
 	});
 	const resultInStorage: VTtest = {
+		name: "",
 		id: result.data.id,
 		url: URL,
 		date: result.data.attributes.last_analysis_date,
@@ -24,10 +25,12 @@ export async function addTestToStorage(
 	};
 
 	if (result.data.type === "file") {
+		resultInStorage.name = result.data.attributes.names[0];
 		resultInStorage.sha256 = result.data.attributes.sha256;
 		resultInStorage.type = "file";
 	}
 	if (result.data.type === "url") {
+		resultInStorage.name = result.data.attributes.title;
 		resultInStorage.sha256 = result.data.id;
 		resultInStorage.type = "url";
 	}

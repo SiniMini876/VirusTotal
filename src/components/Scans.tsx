@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../css/Scans.css";
+import Tooltip from "./Tooltip";
 
 function Scans() {
 	const [tests, setTests] = useState<VTtest[]>([]);
@@ -23,9 +24,11 @@ function Scans() {
 		const { value } = e.target;
 
 		const testsToShow = [];
-
 		for (const test of tests) {
-			if (test.url.includes(value)) {
+			if (
+				test.name.toLowerCase().includes(value.toLowerCase()) ||
+				test.url.toLowerCase().includes(value.toLowerCase())
+			) {
 				testsToShow.push(test);
 			}
 		}
@@ -40,43 +43,18 @@ function Scans() {
 				onChange={searchInputFunc}
 				type="search"
 				className="search_bar"
-				placeholder="Search by URL"
+				placeholder="Search by Name / URL"
 			/>
 			{results.map((scan) => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				const vtScanURL =
-					scan.type === "file"
-						? `https://virustotal.com/gui/file/${scan.sha256}`
-						: `https://virustotal.com/gui/url/${scan.sha256}`;
-				const name = scan.type === "file" ? "File" : "Site";
+
 				return (
 					<div key={scan.url}>
-						<a className="stat" href={scan.url} target="blank_">
-							{name}
-						</a>
-						<br />
-						<a href={scan.widget} className="stat" target="blank_">
-							Widget
-						</a>
-						<br />
-						<a className="stat" href={vtScanURL} target="blank_">
-							VT Analyses
-						</a>
-						<br />
-						<div className="stat">Harmless</div>:{" "}
-						{scan.stats.harmless}
-						<br />
-						<div className="stat">Malicious</div>:{" "}
-						{scan.stats.malicious}
-						<br />
-						<div className="stat">Suspicious</div>:{" "}
-						{scan.stats.suspicious}
-						<br />
-						<div className="stat">Undetected</div>:{" "}
-						{scan.stats.undetected}
-						<br />
-						<div className="stat">SHA256</div>: {scan.sha256}
-						<br />
+						<Tooltip content={scan}>
+							<a className="stat" href={scan.url} target="blank_">
+								{scan.name}
+							</a>
+						</Tooltip>
 					</div>
 				);
 			}) ?? "Not loaded"}

@@ -50,11 +50,9 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
 	const { apikey } = settings;
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const result = await postURL(info.linkUrl!, apikey);
-	setTimeout(async () => {
-		chrome.alarms.create(`urlreport|${result.data.id}|${info.linkUrl}`, {
-			periodInMinutes: 1,
-		});
-	}, 15000);
+	chrome.alarms.create(`urlreport|${result.data.id}|${info.linkUrl}`, {
+		periodInMinutes: 1,
+	});
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {

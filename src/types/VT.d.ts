@@ -9,6 +9,7 @@ interface VTPostResponse {
 }
 
 interface VTtest {
+	name: string,
 	url: string;
 	type: "url" | "file" | "";
 	links: {

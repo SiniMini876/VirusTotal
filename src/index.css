@@ -6,7 +6,7 @@
 }
 body {
 	min-width: 400px;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 h1 {
 	color: var(--light-color);
@@ -15,17 +15,17 @@ a {
 	font-weight: bold;
 	text-decoration: none;
 	color: var(--light-color);
+	border-radius: 0.5rem;
+	padding-left: 0.25rem;
+	padding-right: 0.25rem;
+	padding-top: 0.125rem;
+	padding-bottom: 0.125rem;
 }
 
 a:hover {
 	color: white;
 	text-decoration: none;
 	background-color: var(--light-color);
-	border-radius: 0.5rem /* 6px */;
-	padding-left: 0.5rem /* 8px */;
-	padding-right: 0.5rem /* 8px */;
-	padding-top: 0.25rem /* 4px */;
-	padding-bottom: 0.25rem; /* 4px ;*/
 }
 
 p {
