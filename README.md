@@ -8,3 +8,6 @@ Happy Scanning!
 
 
 Created by SiniMini876 (Yoav Sinai) with the [Virus Total API](https://virustotal.com)
+
+
+Licence: Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
