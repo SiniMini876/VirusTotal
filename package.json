@@ -11,7 +11,7 @@
 		"@types/node": "^16.11.41",
 		"@types/react": "^18.0.14",
 		"@types/react-dom": "^18.0.5",
-		"dompurify": "^2.3.8",
+		"dompurify": "^2.4.3",
 		"jsdom": "^20.0.0",
 		"npm-watch": "^0.11.0",
 		"nth-check": "^2.0.1",
@@ -58,7 +58,7 @@
 	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.190",
-		"@types/dompurify": "^2.3.3",
+		"@types/dompurify": "^2.4.0",
 		"@types/jsdom": "^16.2.14",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
 		"@typescript-eslint/parser": "^5.29.0",
