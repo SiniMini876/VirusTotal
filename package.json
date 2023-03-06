@@ -57,7 +57,7 @@
 		]
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.190",
+		"@types/chrome": "^0.0.219",
 		"@types/dompurify": "^2.4.0",
 		"@types/jsdom": "^16.2.14",
 		"@typescript-eslint/eslint-plugin": "^5.51.0",
